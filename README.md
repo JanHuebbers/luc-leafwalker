@@ -42,8 +42,10 @@ This yields normalized values that allow comparison across samples and experimen
 
 ```text
 luc-leafwalker/
-├── src/
-├── Data/
-├── Output/
-├── config.yml
-└── README.md
+├── Data
+├── LICENSE
+├── Output
+├── README.md
+├── config
+├── environment.yml
+└── src
