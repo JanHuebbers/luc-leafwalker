@@ -1,9 +1,28 @@
-source("./Package_Load.r")
+source("./package_loader.r")
 config_path <- "../config/20260209_AtMLO_AtEXO70.yml"  # change if needed
 source("./config_loader.R")
+source("./ggplot_theme.R")
 
 # Specify the path to your Excel file
 file_path <- "../Data/lum_long_MLOEXO70.csv"
+
+# A helper that converts a triangular data set to a matrix.
+# Important for "multicomp_letters", which converts p-values into letters.
+tri.to.squ <- function(x) {
+  rn <- row.names(x)
+  cn <- colnames(x)
+  an <- unique(c(cn, rn))
+  myval <- x[!is.na(x)]
+  mymat <- matrix(1, nrow = length(an), ncol = length(an), dimnames = list(an, an))
+  for (ext in 1:length(cn)) {
+    for (int in 1:length(rn)) {
+      if (is.na(x[row.names(x) == rn[int], colnames(x) == cn[ext]])) next
+      mymat[row.names(mymat) == rn[int], colnames(mymat) == cn[ext]] <- x[row.names(x) == rn[int], colnames(x) == cn[ext]]
+      mymat[row.names(mymat) == cn[ext], colnames(mymat) == rn[int]] <- x[row.names(x) == rn[int], colnames(x) == cn[ext]]
+    }
+  }
+  return(mymat)
+}
 
 # Read .csv with luminescence values
 remove_outliers_range <- function(df, col = "value", low = -0.05, high = 2.0) {
@@ -79,74 +98,6 @@ data_desc_03 <- describeBy(data$value, list(data$NLuc, data$CLuc), mat = TRUE) %
 readr::write_csv(data_desc_01, file.path(out_dir, "data_desc_01.csv"))
 readr::write_csv(data_desc_02, file.path(out_dir, "data_desc_02.csv"))
 readr::write_csv(data_desc_03, file.path(out_dir, "data_desc_03.csv"))
-
-# Set theme for ggplot objects
-theme_set(
-  theme_light(
-    base_size = 8,
-    base_family = "Arial"
-  )
-)
-
-theme_update(
-  rect = element_rect(fill = "transparent"),
-  plot.background = element_blank(),
-  panel.grid = element_blank(),
-  panel.border = element_blank(),
-  panel.background = element_rect(fill = "transparent", color = NA),
-  strip.background = ggplot2::element_rect(
-    fill = "white",
-    colour = "black",
-    linewidth = 1
-  ),
-  strip.text = ggplot2::element_text(
-    size = 8,
-    colour = "black",
-    face = "bold"
-  ),
-  legend.background = element_rect(fill = "transparent", linetype = "blank"),
-  legend.box.background = element_rect(fill = "transparent", linetype = "blank"),
-  legend.title = element_blank(),
-  legend.text.align = 0,
-  legend.key = element_rect(colour = "transparent", fill = "white"),
-  legend.position = "bottom",
-  axis.title.x = element_text(
-    size = 7, face = "bold", family = "Arial", color = "black", vjust = 0.5, hjust = 0.5
-  ),
-  axis.title.y = element_text(
-    size = 7, face = "bold", family = "Arial", color = "black", vjust = 0.5, hjust = 0.5
-  ),
-  axis.text.x = element_text(
-    size = 6, family = "Arial", hjust = 1.0, angle = 45
-  ),
-  axis.text.y = element_text(
-    size = 6, family = "Arial", face = "plain"
-  ),
-  axis.line = element_line(
-    color = "black", lineend = "round", linetype = "solid", linewidth = 0.5
-  ),
-  axis.ticks = element_line(
-    color = "black", linewidth = 0.5, lineend = "round"
-  )
-)
-
-# A function that converts a triangular data set to a matrix.
-# Important for "multicomp_letters", which converts p-values into letters.
-tri.to.squ <- function(x) {
-  rn <- row.names(x)
-  cn <- colnames(x)
-  an <- unique(c(cn, rn))
-  myval <- x[!is.na(x)]
-  mymat <- matrix(1, nrow = length(an), ncol = length(an), dimnames = list(an, an))
-  for (ext in 1:length(cn)) {
-    for (int in 1:length(rn)) {
-      if (is.na(x[row.names(x) == rn[int], colnames(x) == cn[ext]])) next
-      mymat[row.names(mymat) == rn[int], colnames(mymat) == cn[ext]] <- x[row.names(x) == rn[int], colnames(x) == cn[ext]]
-      mymat[row.names(mymat) == cn[ext], colnames(mymat) == rn[int]] <- x[row.names(x) == rn[int], colnames(x) == cn[ext]]
-    }
-  }
-  return(mymat)
-}
 
 # Test for normal distribution and homogeneity of variances
 data_para <- data_desc_01 %>%

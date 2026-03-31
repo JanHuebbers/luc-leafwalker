@@ -1,22 +1,44 @@
-library(renv)
-# Ensure that all necessary packages are installed and loaded
-libs <- c("ape", "cowplot", "dplyr", "extrafont", "ggbeeswarm", "ggbreak", "ggdist", "ggpattern", "ggpubr", "ggstar", "grid", "gtools", "multcompView", 
-          "openxlsx", "pheatmap", "psych", "RColorBrewer", "readr", "readxl", "reshape2", "reticulate", "rmarkdown", "rstatix", "scales", "showtext", 
-          "svglite", "tibble", "tidyverse", "vitae", "writexl", "yaml")
+PKG_VERBOSE <- FALSE
 
-sapply(libs, function(lib) {
-  tryCatch({
-    if (!require(lib, character.only = TRUE)) {
-      renv::install(lib)
-      library(lib, character.only = TRUE)
+libs <- c(
+  "cowplot",
+  "dplyr",
+  "forcats",
+  "ggplot2",
+  "ggstar",
+  "multcompView",
+  "psych",
+  "purrr",
+  "readr",
+  "rstatix",
+  "scales",
+  "showtext",
+  "sysfonts",
+  "tibble",
+  "tidyr",
+  "yaml"
+)
+
+missing <- character(0)
+
+suppressPackageStartupMessages({
+  invisible(lapply(libs, function(pkg) {
+    ok <- suppressWarnings(
+      require(pkg, character.only = TRUE, quietly = TRUE, warn.conflicts = FALSE)
+    )
+    if (!ok) {
+      missing <<- c(missing, pkg)
+    } else if (PKG_VERBOSE) {
+      message("Loaded: ", pkg)
     }
-  }, error = function(e) {
-    message(paste("Failed to load library:", lib, "with error:", e$message))
-  })
+  }))
 })
 
-# Configure showtext for using Arial font
-showtext_auto()
-font_add("Arial", regular = "arial.ttf", bold = "arialbd.ttf", italic = "ariali.ttf", bolditalic = "arialbi.ttf")
+if (length(missing) > 0) {
+  stop(
+    "The following packages are missing: ",
+    paste(missing, collapse = ", ")
+  )
+}
 
-
+message("All required packages loaded successfully.")

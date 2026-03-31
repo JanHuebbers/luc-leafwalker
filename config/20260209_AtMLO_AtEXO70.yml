@@ -1,0 +1,70 @@
+# ======================= 20260209_AtMLO_AtEXO70 =======================
+Directories:
+  Project_root: "../"                    # from Scripts/ up to 01_LucScreen/
+  Scripts_dir: "src/"                # informational; optional
+  Output_directory: "../Output/20260209_AtMLO_AtEXO70/"
+
+
+# global settings
+Sep: "," # separator for CSV files; default: ","
+Alpha: 0.01 # significance threshold
+
+# figure sizes [cm]
+Figures:
+  Violin: { w: 7.5, h: 5.5 }
+  Heatmap: { w: 7.0, h: 5.0 }
+
+# --- REQUIRED: plot ordering by letters ---
+NLuc:
+  B: "AtMLO1"
+  H: "AtMLO2"
+  E: "AtMLO3"
+  A: "AtMLO4"
+  G: "AtMLO6"
+  C: "AtMLO7"
+  D: "AtMLO9"
+  I: "AtMLO12"
+  F: "HvMlo"
+
+CLuc:
+  A: "AtEXO70A1"
+  C: "AtEXO70B2"
+  D: "AtEXO70D2"
+  E: "AtEXO70D3"
+  F: "AtEXO70E2"
+  B: "AtEXO70G1"
+  G: "AtEXO70H1"
+  H: "AtEXO70H2"
+  I: "AtEXO70H4"
+  J: "AtEXO70H7"
+  
+Colors:
+  Box:
+    default: "#FFFFFF"
+  Point:
+    A: "#CD8B87"
+    B: "#FDD48F"
+    C: "#7DA4A7"
+    D: "#7DA4A7"
+    E: "#7DA4A7"
+    F: "#7DA4A7"
+    G: "#89CCCF"
+    H: "#89CCCF"
+    I: "#89CCCF"
+    J: "#89CCCF"
+  MPoint:
+    A: "#A11035"
+    B: "#F6A800"
+    C: "#006165"
+    D: "#006165"
+    E: "#006165"
+    F: "#006165"
+    G: "#00B1B7"
+    H: "#00B1B7"
+    I: "#00B1B7"
+    J: "#00B1B7"
+  
+  # optional: if you want to filter strictly to these entries
+Filter:
+  enforce_config_only: true
+
