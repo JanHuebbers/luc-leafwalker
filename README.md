@@ -16,6 +16,20 @@ The analysis consists of three main steps:
 
 ### 1. Create input `.xlsx` files
 Raw experiment layouts are generated as structured Excel files containing sample combinations, experiment structure, and replicate setup.
+Use `luc_empty_input_generator.py` to generate empty `.xlsx` templates for luciferase complementation experiments.
+Example:
+```bash
+bash src/run_empty_input_MLO1vsEXO70.sh
+```
+This example script shows how to define:
+- output file
+- number of experiments
+- number of replicates
+- NLuc constructs
+- CLuc constructs
+- normalizer
+- optional layout settings such as --no-spacers
+You can adapt the example shell script for additional experiment sets.
 
 ### 2. Normalize luciferase data
 For each sheet and replicate, the pipeline:
@@ -23,6 +37,15 @@ For each sheet and replicate, the pipeline:
 - applies baseline correction using the 5% quantile
 - normalizes values to a user-defined reference sample within each replicate
 - appends processed data to a long-format `.csv` table
+Example:
+```bash
+bash src/run_normalizer_MLO1vsEXO70.sh
+```
+This example script shows how to define:
+- input .xlsx file
+- output .csv file
+- reference sample used for within-replicate normalization
+You can modify the example shell script to process other experiments and reference sample combinations.
 
 ### 3. Run downstream analysis
 Using a configuration file, the pipeline produces publication-ready analysis outputs such as plots and statistical summaries.
