@@ -1,0 +1,20 @@
+name: luc-leafwalker
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  # Core language versions
+  - python=3.10.16
+  - r-base=4.4.3
+
+  # Python
+  - pandas
+  - numpy
+  - openpyxl
+  - matplotlib
+  - pyyaml
+  - xlsxwriter
+
+  # R libraries (Conda)
+  - r-essentials   # includes tidyverse, devtools, Rcpp, etc.

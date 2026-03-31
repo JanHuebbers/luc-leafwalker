@@ -4,6 +4,13 @@ The repo provides a pipeline for formatting, normalizing, and analyzing data ret
 ## Overview
 `luc-leafwalker` provides a workflow to prepare input tables, normalize luciferase complementation data, and generate downstream analyses and visualizations in a reproducible way. The pipeline is designed for experiments with multiple conditions, experiments, and replicates, and supports reference-based normalization within replicates.
 
+## Environment setup
+Create the Conda environment from the provided file:
+```bash
+conda env create -f environment.yml
+conda activate luc-leafwalker
+```
+
 ## Workflow
 The analysis consists of three main steps:
 
