@@ -10,6 +10,20 @@ Create the Conda environment from the provided file:
 conda env create -f environment.yml
 conda activate luc-leafwalker
 ```
+Install Ubuntu/WSL system libraries required for some R package installations:
+```bash
+sudo apt update
+sudo apt install -y \
+  cmake \
+  libudunits2-dev \
+  libcairo2-dev \
+  libexpat1-dev \
+  pkg-config
+```
+Install required R packages:
+```bash
+Rscript src/install_r_packages.R
+```
 
 ## Workflow
 The analysis consists of three main steps:
@@ -37,6 +51,17 @@ For each sheet and replicate, the pipeline:
 - applies baseline correction using the 5% quantile
 - normalizes values to a user-defined reference sample within each replicate
 - appends processed data to a long-format `.csv` table
+
+## Normalization procedure
+For each replicate within each experiment:
+1. **Compute raw signal per area**
+   `VpA = Volume / Area`
+2. **Baseline correction**
+   The 5% quantile of `VpA` is used as a baseline and subtracted from all samples in the replicate.
+3. **Reference-based normalization**
+   Baseline-corrected values are divided by the mean value of a specified reference sample within the same replicate.
+This yields normalized values that allow comparison across samples and experiments.
+
 Example:
 ```bash
 bash src/run_normalizer_MLO1vsEXO70.sh
@@ -49,17 +74,10 @@ You can modify the example shell script to process other experiments and referen
 
 ### 3. Run downstream analysis
 Using a configuration file, the pipeline produces publication-ready analysis outputs such as plots and statistical summaries.
-
-## Normalization procedure
-For each replicate within each experiment:
-1. **Compute raw signal per area**
-   `VpA = Volume / Area`
-2. **Baseline correction**
-   The 5% quantile of `VpA` is used as a baseline and subtracted from all samples in the replicate.
-3. **Reference-based normalization**
-   Baseline-corrected values are divided by the mean value of a specified reference sample within the same replicate.
-
-This yields normalized values that allow comparison across samples and experiments.
+Customize your config.yml and run the R script by:
+```bash
+Rscript ./src/luc_visualizer
+```
 
 ## Repository structure
 

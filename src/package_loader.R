@@ -13,7 +13,6 @@ libs <- c(
   "rstatix",
   "scales",
   "showtext",
-  "sysfonts",
   "tibble",
   "tidyr",
   "yaml"

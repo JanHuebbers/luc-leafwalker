@@ -1,10 +1,10 @@
-source("./package_loader.r")
-config_path <- "../config/20260209_AtMLO_AtEXO70.yml"  # change if needed
-source("./config_loader.R")
-source("./ggplot_theme.R")
+source("./src/package_loader.R")
+config_path <- "./config/20260209_AtMLO_AtEXO70.yml"  # change if needed
+source("./src/config_loader.R")
+source("./src/ggplot_theme.R")
 
 # Specify the path to your Excel file
-file_path <- "../Data/lum_long_MLOEXO70.csv"
+file_path <- "./Data/lum_long_MLOEXO70.csv"
 
 # A helper that converts a triangular data set to a matrix.
 # Important for "multicomp_letters", which converts p-values into letters.

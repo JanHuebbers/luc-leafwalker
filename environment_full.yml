@@ -31,3 +31,21 @@ dependencies:
   - r-ggstar
   - r-svglite
   - r-showtext
+
+  # System/build libraries required for compiling selected R packages
+  # and their native dependencies inside the Conda environment
+  - cmake          # needed for building packages such as s2/abseil-related deps
+  - zlib           # compression library needed by several compiled packages
+  - cairo          # graphics backend needed for packages such as gdtools
+  - expat          # XML parsing dependency used by font/rendering libraries
+  - freetype       # font rendering library used by graphics-related packages
+  - pkg-config     # helps package configure scripts locate system libraries
+  - compilers      # provides C/C++/Fortran compilers for source package builds
+
+  # Allow pip installs for packages not managed through Conda
+  - pip
+
+  # Python packages installed via pip only
+  - pip:
+    - biopython
+    - hydride
