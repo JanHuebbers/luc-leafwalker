@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-_000_make_frame_input.py
+luc_empty_input_generator.py
 
 Create template Excel workbook for luciferase leaf-assay input.
 
