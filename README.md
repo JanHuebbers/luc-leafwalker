@@ -24,6 +24,10 @@ Install required R packages:
 ```bash
 Rscript src/install_r_packages.R
 ```
+Create project directories
+```bash
+mkdir -p Output config Data
+```
 
 ## Workflow
 The analysis consists of three main steps:
