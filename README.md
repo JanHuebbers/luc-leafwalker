@@ -28,6 +28,26 @@ Create project directories
 ```bash
 mkdir -p Output config Data
 ```
+### Fonts on WSL
+For the plotting scripts to render correctly, the **DejaVu Sans** `.ttf` files must be available inside WSL under:
+```bash
+/usr/share/fonts/truetype/dejavu/
+```
+At minimum, these files should be present:
+- DejaVuSans.ttf
+- DejaVuSans-Bold.ttf
+- DejaVuSans-Oblique.ttf
+- DejaVuSans-BoldOblique.ttf
+If the files are missing, copy them into WSL and refresh the font cache:
+```bash
+sudo mkdir -p /usr/share/fonts/truetype/dejavu
+sudo fc-cache -f -v
+```
+You can verify that WSL sees the fonts with:
+```bash
+fc-list | grep "DejaVu Sans"
+```
+Note: R may still emit warnings such as `font family 'dejavu' not found in PostScript font database`. This is expected, because DejaVu is available as a system TrueType font but is not part of R's built-in PostScript font database.
 
 ## Workflow
 The analysis consists of three main steps:
