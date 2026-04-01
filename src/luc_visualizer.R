@@ -64,7 +64,7 @@ S <- data %>% distinct(across(3))     %>% nrow()
 
 readr::write_csv(data, file.path(out_dir, "lum_curated.csv"))
 
-#Descriptive statistics (e.g., mean, standard deviation, median)
+# Descriptive statistics (e.g., mean, standard deviation)
 # Input data frame for descriptive statistics
 data_desc_01 <- data %>%
   dplyr::group_by(NLuc, CLuc_Sample, Experiment) %>%
