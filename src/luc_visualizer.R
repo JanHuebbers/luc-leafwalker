@@ -46,7 +46,7 @@ data <- read.csv(file_path, check.names = FALSE) %>%
   dplyr::group_by(NLuc, CLuc) %>%
   tidyr::nest() %>%
   dplyr::mutate(ypos = purrr::map_dbl(data, ~ max(.x$value, na.rm = TRUE))) %>%
-  tidyr::unnest(data) %>%
+  tidyr::unnest(cols = c(data)) %>%
   dplyr::ungroup() %>%
   dplyr::mutate(ID = dplyr::row_number()) %>%
   dplyr::mutate(value = as.numeric(value)) %>%
@@ -118,16 +118,16 @@ data_para <- data_desc_01 %>%
       nest() %>%
       mutate(Normal_dist = map(.x = data, ~shapiro_test(mean, data = .x) %>%  tibble())) %>%
       unnest(Normal_dist) %>% 
-      unnest(data) %>%
+      unnest(cols = c(data)) %>%
       rename(p_shapiro = p) %>% 
       select(-c(variable, statistic)) %>%
       #Levene-Test
       group_by(NLuc) %>% 
       nest() %>%
-      mutate(Equal_var = map(.x = data, ~levene_test(mean ~ CLuc_Sample, data = .x))) %>%
+      mutate(Equal_var = map(.x = data, ~levene_test(mean ~ as.factor(CLuc_Sample), data = .x))) %>%
       unnest(Equal_var) %>% 
       select(NLuc, data, p) %>%
-      unnest(data) %>% 
+      unnest(cols = c(data)) %>% 
       rename(p_levene = p)
 data_norm <- data_para %>% 
       group_by(NLuc, CLuc_Sample, p_shapiro, p_levene) %>% 
@@ -174,7 +174,7 @@ posthoc_q <- data_desc_01 %>%
   ))) %>%
   mutate(pV = map(.x = posthoc, ~ tri.to.squ(.x$p.value))) %>%
   mutate(pVal = map(.x = pV, ~ data.matrix(.x))) %>%
-  mutate(q = map(.x = pVal, ~ as.tibble(.x, rownames = NA))) %>%
+  mutate(q = map(.x = pVal, ~ as_tibble(.x, rownames = NA))) %>%
   mutate(q = map(.x = q, ~ rownames_to_column(.x, var = "CLuc_Sample")))
 
 posthoc <- posthoc_q %>%
@@ -190,7 +190,7 @@ letters <- posthoc %>%
 
 data_02 <- posthoc %>%
   select(NLuc, data) %>%
-  unnest(data) %>%
+  unnest(cols = c(data)) %>%
   ungroup()
 
 # A data frame that is used to combine letters and samples
@@ -215,7 +215,7 @@ asterisks <- data_02 %>%
   group_by(CLuc_Sample) %>%
   nest() %>%
   add_column(CLuc_proteins) %>%
-  unnest() %>%
+  unnest(cols = c(data)) %>%
   rename(CLuc = CLuc_proteins)
 
 data_name <- data %>%
@@ -296,7 +296,7 @@ plot_fun <- function(data, x, y, xlim, f, labs_x_expr, axis_title_expr) {
     ) +
     geom_star(
       aes(starshape = Experiment, size = Experiment, fill = Fill_point),
-      alpha = 0.50, color = "#000000", stroke = 0.3,
+      alpha = 0.50, color = "#000000", starstroke = 0.3,
       position = position_nudge(x = c(-0.20, -0.15, 0.15, 0.20))
     ) +
     stat_summary(
@@ -311,7 +311,7 @@ plot_fun <- function(data, x, y, xlim, f, labs_x_expr, axis_title_expr) {
       color = "#000000",
       geom = "star",
       size = 1.6,
-      stroke = 0.4,
+      starstroke = 0.4,
       alpha = 0.95,
       fun = mean
     ) +

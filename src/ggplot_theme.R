@@ -5,6 +5,13 @@ font_add("ubuntu",
          italic = "/usr/share/fonts/truetype/ubuntu/Ubuntu-RI.ttf",
          bolditalic = "/usr/share/fonts/truetype/ubuntu/Ubuntu-BI.ttf")
 
+# Register full DejaVu Sans font family with all styles
+font_add("dejavu",
+         regular = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+         bold = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+         italic = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Oblique.ttf",
+         bolditalic = "/usr/share/fonts/truetype/dejavu/DejaVuSans-BoldOblique.ttf")
+
 showtext_auto()
 
 # Set base theme
