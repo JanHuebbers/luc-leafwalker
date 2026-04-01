@@ -76,7 +76,7 @@ You can modify the example shell script to process other experiments and referen
 Using a configuration file, the pipeline produces publication-ready analysis outputs such as plots and statistical summaries.
 Customize your config.yml and run the R script by:
 ```bash
-Rscript ./src/luc_visualizer
+Rscript ./src/luc_visualizer.R
 ```
 
 ## Repository structure
