@@ -30,7 +30,7 @@ remove_outliers_range <- function(df, col = "value", low = -0.05, high = 2.0) {
 }
 
 data <- read.csv(file_path, check.names = FALSE) %>%
-  dplyr::select(-dplyr::matches("^Unnamed")) %>%
+  dplyr::select(-dplyr::matches("^Unnamed")) %>% 
   dplyr::mutate(value = VpA_norm) %>%
   dplyr::filter(!is.na(value)) %>%
   dplyr::relocate(value, .after = CLuc) %>%
@@ -49,84 +49,97 @@ data <- read.csv(file_path, check.names = FALSE) %>%
   tidyr::unnest(data) %>%
   dplyr::ungroup() %>%
   dplyr::mutate(ID = dplyr::row_number()) %>%
+  dplyr::mutate(value = as.numeric(value)) %>%
   dplyr::relocate(ID, .before = NLuc)
 
 print(data)
+print(sapply(data, class))
 print(unique(data$NLuc))
-print(unique(data$CLuc))
+print(unique(data$CLuc_Sample))
+
 
 # E (CLuc per NLuc) = number of unique (col2, col3) combos; S (number of different samples) = unique values in col3
-E <- data %>% distinct(across(2:3)) %>% nrow()
-S <- data %>% distinct(across(3)) %>% nrow()
+E <- data %>% distinct(across(2:3))   %>% nrow()
+S <- data %>% distinct(across(3))     %>% nrow()
 
 readr::write_csv(data, file.path(out_dir, "lum_curated.csv"))
 
-# Descriptive statistics (e.g., mean, standard deviation, median)
+#Descriptive statistics (e.g., mean, standard deviation, median)
 # Input data frame for descriptive statistics
-data_desc_01 <- describeBy(data$value, list(data$NLuc, data$CLuc_Sample, data$Experiment), mat = TRUE) %>%
-  as_tibble() %>%
-  select(group1, group2, group3, mean, sd) %>%
-  mutate(ID = row_number()) %>%
-  mutate(group1 = fct_reorder(group1, ID)) %>%
-  rename(c(NLuc = group1, CLuc_Sample = group2, Experiment = group3)) %>%
-  relocate(ID, .before = NLuc) %>%
-  na.omit() %>%
-  arrange(NLuc)
-
+data_desc_01 <- data %>%
+  dplyr::group_by(NLuc, CLuc_Sample, Experiment) %>%
+  dplyr::summarise(
+    mean = mean(value, na.rm = TRUE),
+    sd = sd(value, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  dplyr::mutate(ID = dplyr::row_number()) %>%
+  dplyr::mutate(NLuc = forcats::fct_reorder(NLuc, ID)) %>%
+  dplyr::relocate(ID, .before = NLuc) %>%
+  tidyr::drop_na() %>%
+  dplyr::arrange(NLuc)
+print(data_desc_01)
 # Input data frame for heat map
-data_desc_02 <- describeBy(data$value, list(data$NLuc, data$CLuc_Sample), mat = TRUE) %>%
-  as_tibble() %>%
-  select(group1, group2, mean, sd) %>%
-  mutate(ID = row_number()) %>%
-  mutate(group1 = fct_reorder(group1, ID)) %>%
-  rename(c(NLuc = group1, CLuc_Sample = group2)) %>%
-  relocate(ID, .before = NLuc) %>%
-  na.omit() %>%
-  arrange(NLuc)
+data_desc_02 <- data %>%
+  dplyr::group_by(NLuc, CLuc_Sample) %>%
+  dplyr::summarise(
+    mean = mean(value, na.rm = TRUE),
+    sd = sd(value, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  dplyr::mutate(ID = dplyr::row_number()) %>%
+  dplyr::mutate(NLuc = forcats::fct_reorder(NLuc, ID)) %>%
+  dplyr::relocate(ID, .before = NLuc) %>%
+  tidyr::drop_na() %>%
+  dplyr::arrange(NLuc)
 
-data_desc_03 <- describeBy(data$value, list(data$NLuc, data$CLuc), mat = TRUE) %>%
-  as_tibble() %>%
-  select(group1, group2, mean, sd) %>%
-  mutate(ID = row_number()) %>%
-  mutate(group1 = fct_reorder(group1, ID)) %>%
-  rename(c(NLuc = group1, CLuc = group2)) %>%
-  relocate(ID, .before = NLuc) %>%
-  na.omit() %>%
-  arrange(NLuc) %>%
-  select(-c(ID))
+# Input data frame for 
+data_desc_03 <- data %>%
+  dplyr::group_by(NLuc, CLuc) %>%
+  dplyr::summarise(
+    mean = mean(value, na.rm = TRUE),
+    sd = sd(value, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  dplyr::mutate(ID = dplyr::row_number()) %>%
+  dplyr::mutate(NLuc = forcats::fct_reorder(NLuc, ID)) %>%
+  dplyr::relocate(ID, .before = NLuc) %>%
+  tidyr::drop_na() %>%
+  dplyr::arrange(NLuc)
 
 readr::write_csv(data_desc_01, file.path(out_dir, "data_desc_01.csv"))
 readr::write_csv(data_desc_02, file.path(out_dir, "data_desc_02.csv"))
 readr::write_csv(data_desc_03, file.path(out_dir, "data_desc_03.csv"))
 
-# Test for normal distribution and homogeneity of variances
+#Test for normal distribution and homogeneity of variances
 data_para <- data_desc_01 %>%
-  group_by(NLuc, CLuc_Sample) %>%
-  nest() %>%
-  mutate(Normal_dist = map(.x = data, ~ shapiro_test(mean, data = .x) %>% tibble())) %>%
-  unnest(Normal_dist) %>%
-  unnest(data) %>%
-  rename(p_shapiro = p) %>%
-  select(-c(variable, statistic)) %>%
-  group_by(NLuc) %>%
-  nest() %>%
-  mutate(Equal_var = map(.x = data, ~ levene_test(mean ~ CLuc_Sample, data = .x))) %>%
-  unnest(Equal_var) %>%
-  select(NLuc, data, p) %>%
-  unnest(data) %>%
-  rename(p_levene = p)
-
-data_norm <- data_para %>%
-  group_by(NLuc, CLuc_Sample, p_shapiro, p_levene) %>%
-  nest %>%
-  select(-c(data)) %>%
-  tibble() %>%
-  mutate(ID = row_number())
-
-non_Norm <- data_norm %>%
-  filter(p_shapiro <= 0.05) %>%
-  group_by(NLuc, CLuc_Sample, p_shapiro) %>%
-  nest
+      #Shapiro-Wilk-Test
+      group_by(NLuc, CLuc_Sample) %>%
+      nest() %>%
+      mutate(Normal_dist = map(.x = data, ~shapiro_test(mean, data = .x) %>%  tibble())) %>%
+      unnest(Normal_dist) %>% 
+      unnest(data) %>%
+      rename(p_shapiro = p) %>% 
+      select(-c(variable, statistic)) %>%
+      #Levene-Test
+      group_by(NLuc) %>% 
+      nest() %>%
+      mutate(Equal_var = map(.x = data, ~levene_test(mean ~ CLuc_Sample, data = .x))) %>%
+      unnest(Equal_var) %>% 
+      select(NLuc, data, p) %>%
+      unnest(data) %>% 
+      rename(p_levene = p)
+data_norm <- data_para %>% 
+      group_by(NLuc, CLuc_Sample, p_shapiro, p_levene) %>% 
+      nest %>%
+      select(-c(data)) %>%
+      tibble() %>%
+      mutate(ID = row_number())
+      
+non_Norm <- data_norm %>% 
+      filter(p_shapiro <= 0.05) %>%
+      group_by(NLuc, CLuc_Sample, p_shapiro) %>% 
+      nest()
 
 # qqPlot
 data_qq <- data_para %>%

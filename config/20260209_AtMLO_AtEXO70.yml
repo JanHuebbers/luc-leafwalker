@@ -1,8 +1,8 @@
 # ======================= 20260209_AtMLO_AtEXO70 =======================
 Directories:
-  Project_root: "../"                    # from Scripts/ up to 01_LucScreen/
-  Scripts_dir: "src/"                # informational; optional
-  Output_directory: "../Output/20260209_AtMLO_AtEXO70/"
+  Project_root: "./"                    # from Scripts/ up to 01_LucScreen/
+  Scripts_dir: "./src/"                # informational; optional
+  Output_directory: "./Output/20260209_AtMLO_AtEXO70/"
 
 
 # global settings
